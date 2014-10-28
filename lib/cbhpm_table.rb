@@ -7,9 +7,12 @@ class CBHPMTable
 
   def initialize(cbhpm_path, headers_hash = nil)
     cbhpm_file_extension = File.extname(cbhpm_path)
+    cbhpm_file_basename  = File.basename(cbhpm_path)
+
     roo_class = ROO_CLASS_FOR_EXTENSION[cbhpm_file_extension]
     @roo = roo_class.new(cbhpm_path)
-    @headers_hash = headers_hash || HEADER_FOR_FILE[cbhpm_path]
+    @headers_hash = headers_hash || HEADER_FOR_FILE[cbhpm_file_basename]
+    raise "Can't find predefined headers for #{cbhpm_path}" unless @headers_hash
   end
 
   def headers
