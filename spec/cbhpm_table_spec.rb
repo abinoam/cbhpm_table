@@ -3,7 +3,7 @@ require 'cbhpm_table'
 
 describe CBHPMTable do
   let(:cbhpm_table) do
-    CBHPMTable.new("spec/cbhpm/CBHPM_cut_for_testing.xlsx",
+    CBHPMTable.new("spec/cbhpm/cbhpm_cut_for_testing.xlsx",
                    CBHPMTable::HeaderFormat::CBHPM2012)
   end
 
@@ -58,6 +58,10 @@ describe CBHPMTable do
     describe ".first" do
       it { expect(rows.first).to be_instance_of Hash }
     end
+  end
+
+  describe "#edition_name" do
+    it { expect(cbhpm_table.edition_name).to eq "2012" }
   end
 end
 

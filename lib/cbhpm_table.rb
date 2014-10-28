@@ -3,11 +3,13 @@ require "cbhpm_table/version"
 require 'roo'
 
 class CBHPMTable
-  attr_reader :roo, :headers_hash
+  attr_reader :roo, :headers_hash, :edition_name
 
   def initialize(cbhpm_path, headers_hash = nil)
     cbhpm_file_extension = File.extname(cbhpm_path)
     cbhpm_file_basename  = File.basename(cbhpm_path)
+
+    @edition_name = EDITION_NAME_FOR_FILE[cbhpm_file_basename]
 
     roo_class = ROO_CLASS_FOR_EXTENSION[cbhpm_file_extension]
     @roo = roo_class.new(cbhpm_path)
@@ -83,7 +85,14 @@ class CBHPMTable
   HEADER_FOR_FILE =
     { "CBHPM 5¶ Ediá∆o.xls" => HeaderFormat::CBHPM5a,
       "CBHPM 2010 separada.xls" => HeaderFormat::CBHPM2010,
-      "CBHPM 2012.xlsx" => HeaderFormat::CBHPM2012 }
+      "CBHPM 2012.xlsx" => HeaderFormat::CBHPM2012,
+      "cbhpm_cut_for_testing.xlsx" => HeaderFormat::CBHPM2012 }
+
+  EDITION_NAME_FOR_FILE =
+    { "CBHPM 5¶ Ediá∆o.xls" => "5a",
+      "CBHPM 2010 separada.xls" => "2010",
+      "CBHPM 2012.xlsx" => "2012",
+      "cbhpm_cut_for_testing.xlsx" => "2012" }
 
   ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx }
 end
