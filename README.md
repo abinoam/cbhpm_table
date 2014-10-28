@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/cbhpm_table.svg)](http://badge.fury.io/rb/cbhpm_table)
+
 # CBHPMTable
 
 A simple gem to wrap the CBHPM excel files from Associação Brasileira de Medicina.
