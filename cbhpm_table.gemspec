@@ -5,12 +5,12 @@ require 'cbhpm_table/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "cbhpm_table"
-  spec.version       = CbhpmTable::VERSION
+  spec.version       = CBHPMTable::VERSION
   spec.authors       = ["Abinoam Praxedes Marques Jr."]
   spec.email         = ["abinoam@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{CBHPM Table. A simple wrapper around the CBHPM excel files.}
+  spec.description   = %q{It takes a CBHPM Excel spreadsheet file and give convenience methods to deal with it. }
+  spec.homepage      = "https://github.com/abinoam/cbhpm_table"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
