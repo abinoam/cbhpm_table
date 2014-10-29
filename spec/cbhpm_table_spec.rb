@@ -4,13 +4,13 @@ require 'cbhpm_table'
 describe CBHPMTable do
   let(:cbhpm_table) do
     CBHPMTable.new("spec/cbhpm/cbhpm_cut_for_testing.xlsx",
-                   CBHPMTable::HeaderFormat::CBHPM2012)
+                   CBHPMTable::CBHPM2012[:header_format])
   end
 
   it { expect(cbhpm_table).to respond_to(:headers) }
 
   describe "#headers_hash - the format hash for headers" do
-    it { expect(cbhpm_table.headers_hash).to eq CBHPMTable::HeaderFormat::CBHPM2012 }
+    it { expect(cbhpm_table.headers_hash).to eq CBHPMTable::CBHPM2012[:header_format] }
   end
 
   describe "#headers - the first line of the CBHPM Table" do

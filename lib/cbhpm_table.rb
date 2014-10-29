@@ -3,17 +3,14 @@ require "cbhpm_table/version"
 require 'roo'
 
 class CBHPMTable
-  attr_reader :roo, :headers_hash, :edition_name
+  attr_reader :roo
 
   def initialize(cbhpm_path, headers_hash = nil)
-    cbhpm_file_extension = File.extname(cbhpm_path)
-    cbhpm_file_basename  = File.basename(cbhpm_path)
+    @cbhpm_path = cbhpm_path
 
-    @edition_name = EDITION_NAME_FOR_FILE[cbhpm_file_basename]
-
-    roo_class = ROO_CLASS_FOR_EXTENSION[cbhpm_file_extension]
+    roo_class = ROO_CLASS_FOR_EXTENSION[File.extname(cbhpm_path)]
     @roo = roo_class.new(cbhpm_path)
-    @headers_hash = headers_hash || HEADER_FOR_FILE[cbhpm_file_basename]
+    @headers_hash = headers_hash || get_headers_hash
     raise "Can't find predefined headers for #{cbhpm_path}" unless @headers_hash
   end
 
@@ -43,6 +40,22 @@ class CBHPMTable
     each_row.to_a
   end
 
+  def edition_name
+    version[:edition_name]
+  end
+
+  def version
+    @version ||= get_version
+  end
+
+  def get_version
+    VERSION_FOR_FILE[File.basename(cbhpm_path)]
+  end
+
+  def cbhpm_path
+    @cbhpm_path
+  end
+
   def each_row
     return to_enum(:each_row) unless block_given?
     roo_enum = roo.to_enum(:each)
@@ -52,47 +65,63 @@ class CBHPMTable
     end
   end
 
-  private :first_row_index, :import_row
+  def headers_hash
+    @headers_hash ||= get_headers_hash
+  end
+
+  def get_headers_hash
+    VERSIONS[version][:header_format]
+  end
+
+  private :first_row_index, :import_row, :get_version, :get_headers_hash
 end
 
 class CBHPMTable
-  module HeaderFormat
-    CBHPM5a =
-      { 0 => "code",
+  VERSIONS = {
+    :cbhpm5a => CBHPM5a = {
+      :file_basename => "CBHPM 5¶ Ediá∆o.xls",
+      :edition_name => "5a",
+      :header_format => {
+        0 => "code",
         1 => "name",
         4 => "cir_size",
         5 => "uco",
         6 => "aux_qty",
-        7 => "an_size" }
-
-    CBHPM2010 =
-      { 0 => "code",
+        7 => "an_size"
+      }
+    },
+    :cbhpm2010 => CBHPM2010 = {
+      :file_basename => "CBHPM 2010 separada.xls",
+      :edition_name  => "2010",
+      :header_format => {
+        0 => "code",
         1 => "name",
         4 => "cir_size",
         5 => "uco",
         6 => "aux_qty",
-        7 => "an_size" }
-
-    CBHPM2012 =
-      { 4 => "code",
+        7 => "an_size"
+      }
+    },
+    :cbhpm2012 => CBHPM2012 = {
+      :file_basename => "CBHPM 2012.xlsx",
+      :edition_name => "2012",
+      :header_format => {
+        4 => "code",
         5 => "name",
         8 => "cir_size",
         9 => "uco",
         10 => "aux_qty",
-        11 => "an_size" }
-  end
+        11 => "an_size"
+      }
+    }
+  }
 
-  HEADER_FOR_FILE =
-    { "CBHPM 5¶ Ediá∆o.xls" => HeaderFormat::CBHPM5a,
-      "CBHPM 2010 separada.xls" => HeaderFormat::CBHPM2010,
-      "CBHPM 2012.xlsx" => HeaderFormat::CBHPM2012,
-      "cbhpm_cut_for_testing.xlsx" => HeaderFormat::CBHPM2012 }
-
-  EDITION_NAME_FOR_FILE =
-    { "CBHPM 5¶ Ediá∆o.xls" => "5a",
-      "CBHPM 2010 separada.xls" => "2010",
-      "CBHPM 2012.xlsx" => "2012",
-      "cbhpm_cut_for_testing.xlsx" => "2012" }
+  VERSION_FOR_FILE = {
+    "CBHPM 5¶ Ediá∆o.xls" => CBHPM5a,
+    "CBHPM 2010 separada.xls" => CBHPM2010,
+    "CBHPM 2012.xlsx" => CBHPM2012,
+    "cbhpm_cut_for_testing.xlsx" => CBHPM2012
+  }
 
   ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx }
 end
