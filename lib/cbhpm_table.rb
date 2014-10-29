@@ -70,7 +70,15 @@ class CBHPMTable
   end
 
   def get_headers_hash
-    VERSIONS[version_format][:header_format]
+    version_format[:header_format]
+  end
+
+  def start_date
+    version_format[:start_date]
+  end
+
+  def end_date
+    version_format[:end_date]
   end
 
   private :first_row_index, :import_row, :get_version_format, :get_headers_hash
@@ -88,7 +96,9 @@ class CBHPMTable
         5 => "uco",
         6 => "aux_qty",
         7 => "an_size"
-      }
+      },
+      :start_date => "01/01/2008",
+      :end_date   => "31/12/2009"
     },
     :cbhpm2010 => CBHPM2010 = {
       :file_basename => "CBHPM 2010 separada.xls",
@@ -100,7 +110,9 @@ class CBHPMTable
         5 => "uco",
         6 => "aux_qty",
         7 => "an_size"
-      }
+      },
+      :start_date => "01/01/2010",
+      :end_date   => "31/12/2011"
     },
     :cbhpm2012 => CBHPM2012 = {
       :file_basename => "CBHPM 2012.xlsx",
@@ -112,7 +124,9 @@ class CBHPMTable
         9 => "uco",
         10 => "aux_qty",
         11 => "an_size"
-      }
+      },
+      :start_date => "01/01/2012",
+      :end_date   => nil
     }
   }
 

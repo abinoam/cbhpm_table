@@ -67,6 +67,7 @@ describe CBHPMTable do
   describe "#version_format" do
     it { expect(cbhpm_table.version_format).to be_instance_of Hash }
     it "should return proper Hash with :edition_name key" do
+      STDOUT.puts cbhpm_table.version_format.inspect
       expect(cbhpm_table.version_format[:edition_name]).to eq "2012"
     end
   end
@@ -74,6 +75,18 @@ describe CBHPMTable do
   describe "#cbhpm_path" do
     it "should return the cbhpm initialization path" do
       expect(cbhpm_table.cbhpm_path).to eq "spec/cbhpm/cbhpm_cut_for_testing.xlsx"
+    end
+  end
+
+  describe "#start_date" do
+    it "should return proper start_date for cbhpm version" do
+      expect(cbhpm_table.start_date).to eq "01/01/2012"
+    end
+  end
+
+  describe "#end_date" do
+    it "should return proper end_date for cbhpm version" do
+      expect(cbhpm_table.end_date).to eq nil
     end
   end
 end
