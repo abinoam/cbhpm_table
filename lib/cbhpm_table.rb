@@ -41,14 +41,14 @@ class CBHPMTable
   end
 
   def edition_name
-    version[:edition_name]
+    version_format[:edition_name]
   end
 
-  def version
-    @version ||= get_version
+  def version_format
+    @version_format ||= get_version_format
   end
 
-  def get_version
+  def get_version_format
     VERSION_FOR_FILE[File.basename(cbhpm_path)]
   end
 
@@ -70,10 +70,10 @@ class CBHPMTable
   end
 
   def get_headers_hash
-    VERSIONS[version][:header_format]
+    VERSIONS[version_format][:header_format]
   end
 
-  private :first_row_index, :import_row, :get_version, :get_headers_hash
+  private :first_row_index, :import_row, :get_version_format, :get_headers_hash
 end
 
 class CBHPMTable
