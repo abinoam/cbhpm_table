@@ -70,5 +70,11 @@ describe CBHPMTable do
       expect(cbhpm_table.version_format[:edition_name]).to eq "2012"
     end
   end
+
+  describe "#cbhpm_path" do
+    it "should return the cbhpm initialization path" do
+      expect(cbhpm_table.cbhpm_path).to eq "spec/cbhpm/cbhpm_cut_for_testing.xlsx"
+    end
+  end
 end
 
