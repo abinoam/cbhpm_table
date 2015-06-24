@@ -2,7 +2,7 @@
 
 require "cbhpm_table/version"
 
-require 'roo'
+require 'roo-xls'
 
 class CBHPMTable
   attr_reader :roo
