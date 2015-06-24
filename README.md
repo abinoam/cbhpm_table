@@ -1,5 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/cbhpm_table.svg)](http://badge.fury.io/rb/cbhpm_table)
 [![Build Status](https://travis-ci.org/abinoam/cbhpm_table.svg?branch=master)](https://travis-ci.org/abinoam/cbhpm_table)
+[![Code Climate](https://codeclimate.com/github/abinoam/cbhpm_table/badges/gpa.svg)](https://codeclimate.com/github/abinoam/cbhpm_table)
 
 # CBHPMTable
 
