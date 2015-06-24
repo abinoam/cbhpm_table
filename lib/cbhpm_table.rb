@@ -87,9 +87,10 @@ class CBHPMTable
 end
 
 class CBHPMTable
-  VERSIONS = {
-    :cbhpm5a => CBHPM5a = {
-      :file_basename => "CBHPM 5¶ Ediá∆o.xls",
+  VERSIONS = {}
+
+  CBHPM5a = VERSIONS[:cbhpm5a] =
+    { :file_basename => "CBHPM 5¶ Ediá∆o.xls",
       :edition_name => "5a",
       :header_format => {
         0 => "code",
@@ -100,24 +101,17 @@ class CBHPMTable
         7 => "an_size"
       },
       :start_date => "01/01/2008",
-      :end_date   => "31/12/2009"
-    },
-    :cbhpm2010 => CBHPM2010 = {
-      :file_basename => "CBHPM 2010 separada.xls",
+      :end_date   => "31/12/2009" }
+
+  CBHPM2010 = VERSIONS[:cbhpm2010] =
+    { :file_basename => "CBHPM 2010 separada.xls",
       :edition_name  => "2010",
-      :header_format => {
-        0 => "code",
-        1 => "name",
-        4 => "cir_size",
-        5 => "uco",
-        6 => "aux_qty",
-        7 => "an_size"
-      },
+      :header_format => CBHPM5a[:header_format],
       :start_date => "01/01/2010",
-      :end_date   => "31/12/2011"
-    },
-    :cbhpm2012 => CBHPM2012 = {
-      :file_basename => "CBHPM 2012.xlsx",
+      :end_date   => "31/12/2011" }
+
+  CBHPM2012 = VERSIONS[:cbhpm2012] =
+    { :file_basename => "CBHPM 2012.xlsx",
       :edition_name => "2012",
       :header_format => {
         4 => "code",
@@ -128,16 +122,13 @@ class CBHPMTable
         11 => "an_size"
       },
       :start_date => "01/01/2012",
-      :end_date   => nil
-    }
-  }
+      :end_date   => nil }
 
   VERSION_FOR_FILE = {
     "CBHPM 5¶ Ediá∆o.xls" => CBHPM5a,
     "CBHPM 2010 separada.xls" => CBHPM2010,
     "CBHPM 2012.xlsx" => CBHPM2012,
-    "cbhpm_cut_for_testing.xlsx" => CBHPM2012
-  }
+    "cbhpm_cut_for_testing.xlsx" => CBHPM2012 }
 
   ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx }
 end
