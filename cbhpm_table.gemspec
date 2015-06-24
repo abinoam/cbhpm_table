@@ -8,8 +8,10 @@ Gem::Specification.new do |spec|
   spec.version       = CBHPMTable::VERSION
   spec.authors       = ["Abinoam Praxedes Marques Jr."]
   spec.email         = ["abinoam@gmail.com"]
-  spec.summary       = %q{CBHPM Table. A simple wrapper around the CBHPM excel files.}
-  spec.description   = %q{It takes a CBHPM Excel spreadsheet file and give convenience methods to deal with it. }
+  spec.summary       = "CBHPM Table. A simple wrapper around the CBHPM" \
+                       " excel files."
+  spec.description   = "It takes a CBHPM Excel spreadsheet file" \
+                       " and give convenience methods to deal with it."
   spec.homepage      = "https://github.com/abinoam/cbhpm_table"
   spec.license       = "MIT"
 
