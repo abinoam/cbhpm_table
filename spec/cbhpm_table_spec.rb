@@ -67,7 +67,6 @@ describe CBHPMTable do
   describe "#version_format" do
     it { expect(cbhpm_table.version_format).to be_instance_of Hash }
     it "should return proper Hash with :edition_name key" do
-      STDOUT.puts cbhpm_table.version_format.inspect
       expect(cbhpm_table.version_format[:edition_name]).to eq "2012"
     end
   end
