@@ -7,3 +7,6 @@ rvm:
   - rbx-2
   - ruby-head
   - jruby-head
+addons:
+  code_climate:
+    repo_token: 41705ab9c6003dd0a97a8e359bfa0331c63b744dab95e4a056daee9f2e3e71d2
