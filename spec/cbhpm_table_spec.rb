@@ -4,10 +4,7 @@ require 'rspec'
 require 'cbhpm_table'
 
 describe CBHPMTable do
-  let(:cbhpm_table) do
-    CBHPMTable.new("spec/cbhpm/cbhpm_cut_for_testing.xlsx",
-                   CBHPMTable::CBHPM2012[:header_format])
-  end
+  let(:cbhpm_table) { CBHPMTable.new("spec/cbhpm/cbhpm_cut_for_testing.xlsx") }
 
   it { expect(cbhpm_table).to respond_to(:headers) }
 
