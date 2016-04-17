@@ -106,6 +106,34 @@ class CBHPMTable
 
   VERSIONS = {}
 
+  CBHPM3a = VERSIONS[:cbhpm3a] =
+    { file_basename: "CBHPM 2004 3¶ EDIÄ«O.XLS",
+      edition_name: "3a",
+      header_format: {
+        0 => "code",
+        1 => "name",
+        4 => "cir_size",
+        5 => "uco",
+        6 => "aux_qty",
+        7 => "an_size"
+      },
+      start_date: "01/01/2004",
+      end_date: "31/12/2005" }
+
+  CBHPM4a = VERSIONS[:cbhpm4a] =
+    { file_basename: "CBHPM  4¶ EDIÄ«O.xls",
+      edition_name: "4a",
+      header_format: {
+        0 => "code",
+        1 => "name",
+        4 => "cir_size",
+        5 => "uco",
+        6 => "aux_qty",
+        7 => "an_size"
+      },
+      start_date: "01/01/2006",
+      end_date: "31/12/2007" }
+
   CBHPM5a = VERSIONS[:cbhpm5a] =
     { file_basename: "CBHPM 5¶ Ediá∆o.xls",
       edition_name: "5a",
@@ -142,6 +170,8 @@ class CBHPMTable
       end_date: nil }
 
   VERSION_FOR_FILE = {
+    "CBHPM 2004 3¶ EDIÄ«O.XLS" => CBHPM3a,
+    "CBHPM  4¶ EDIÄ«O.xls" => CBHPM4a,
     "CBHPM 5¶ Ediá∆o.xls" => CBHPM5a,
     "CBHPM 2010 separada.xls" => CBHPM2010,
     "CBHPM 2012.xlsx" => CBHPM2012,
