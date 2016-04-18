@@ -1,12 +1,12 @@
 language: ruby
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1.0
-  - 2.2.0
+  - 2.1
+  - 2.2
+  - 2.3
   - rbx-2
-  - ruby-head
-  - jruby-head
+  - rbx-3
+  - jruby-1.7
+  - jruby-9.0
 addons:
   code_climate:
     repo_token: 41705ab9c6003dd0a97a8e359bfa0331c63b744dab95e4a056daee9f2e3e71d2
