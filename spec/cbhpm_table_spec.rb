@@ -93,7 +93,7 @@ describe CBHPMTable do
 
   describe "#end_date" do
     it "should return proper end_date for cbhpm version" do
-      expect(cbhpm_table.end_date).to eq nil
+      expect(cbhpm_table.end_date).to eq "31/12/2013"
     end
   end
 end

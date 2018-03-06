@@ -167,7 +167,21 @@ class CBHPMTable
         11 => "an_size"
       },
       start_date: "01/01/2012",
-      end_date: nil }
+      end_date: "31/12/2013" }
+
+  CBHPM2014 = VERSIONS[:cbhpm2014] =
+    { file_basename: "CBHPM 2012.xlsx",
+      edition_name: "2014",
+      header_format: {
+        4 => "code",
+        5 => "name",
+        8 => "cir_size",
+        9 => "uco",
+        10 => "aux_qty",
+        11 => "an_size"
+      },
+      start_date: "01/01/2014",
+      end_date: "31/12/2015" }
 
   VERSION_FOR_FILE = {
     "CBHPM 2004 3¶ EDIÄ«O.XLS" => CBHPM3a,
@@ -175,6 +189,7 @@ class CBHPMTable
     "CBHPM 5¶ Ediá∆o.xls" => CBHPM5a,
     "CBHPM 2010 separada.xls" => CBHPM2010,
     "CBHPM 2012.xlsx" => CBHPM2012,
+    "CBHPM 2014.xlsx" => CBHPM2014,
     "cbhpm_cut_for_testing.xlsx" => CBHPM2012 }
 
   ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx }
