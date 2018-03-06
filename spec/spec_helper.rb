@@ -19,9 +19,6 @@
 require 'simplecov'
 SimpleCov.start
 
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
-
 require 'cbhpm_table'
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
