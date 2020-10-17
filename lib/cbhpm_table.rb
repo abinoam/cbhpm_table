@@ -170,7 +170,7 @@ class CBHPMTable
       end_date: "31/12/2013" }
 
   CBHPM2014 = VERSIONS[:cbhpm2014] =
-    { file_basename: "CBHPM 2012.xlsx",
+    { file_basename: "CBHPM 2014.xlsx",
       edition_name: "2014",
       header_format: {
         4 => "code",
