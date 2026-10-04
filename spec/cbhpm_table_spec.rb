@@ -122,8 +122,10 @@ describe CBHPMTable do
       expect(import("code" => 40901688.0)["code"]).to eq "40901688"
     end
 
-    it "removes the punctuation of dotted codes" do
+    it "removes the punctuation of 8 digit codes" do
       expect(import("code" => "4.02.01.02-3")["code"]).to eq "40201023"
+      expect(import("code" => "3110428-2")["code"]).to eq "31104282"
+      expect(import("code" => "330735114")["code"]).to eq "330735114"
     end
 
     it "squeezes whitespace in names" do
@@ -172,7 +174,7 @@ describe CBHPMTable do
     end
   end
 
-  describe "duplicated codes" do
+  describe "duplicated codes and rows without code" do
     let(:roo) { instance_double(Roo::Excelx) }
 
     before do
@@ -180,6 +182,8 @@ describe CBHPMTable do
       allow(roo).to receive(:each).and_yield([])
         .and_yield(row_array(10101012, "Primeira "))
         .and_yield(row_array("10101020", "Outra"))
+        .and_yield(row_array(nil, ""))
+        .and_yield(row_array(" ", nil))
         .and_yield(row_array("10101012", "Primeira"))
     end
 
@@ -187,7 +191,7 @@ describe CBHPMTable do
       Array.new(12).tap { |row| row[4] = code; row[5] = name }
     end
 
-    it "keeps only the last row read, at the position of the first" do
+    it "keeps only the last row read for each code, discarding rows without code" do
       expect(cbhpm_table.rows.map { |r| r.values_at("code", "name") }).to eq(
         [%w[10101012 Primeira], %w[10101020 Outra]])
     end

@@ -86,7 +86,8 @@ class CBHPMTable
   def normalize_code(value)
     return integer_value(value).to_s if value.is_a?(Numeric)
     code = value.strip
-    code.match?(/\A\d\.\d{2}\.\d{2}\.\d{2}-\d\z/) ? code.delete(".-") : code
+    digits = code.delete(".-")
+    digits.match?(/\A\d{8}\z/) ? digits : code
   end
 
   def normalize_decimal(value)
@@ -125,8 +126,9 @@ class CBHPMTable
 
   attr_reader :cbhpm_path
 
-  # Duplicated codes are silently discarded: the last row read for a code
-  # overwrites the previous ones, keeping the position of the first.
+  # Rows without code are silently discarded. So are duplicated codes: the
+  # last row read for a code overwrites the previous ones, keeping the
+  # position of the first.
   def each_row(&block)
     return to_enum(:each_row) unless block_given?
     unique_rows.each_value(&block)
@@ -135,7 +137,7 @@ class CBHPMTable
   def unique_rows
     @unique_rows ||= roo.to_enum(:each).drop(1).each_with_object({}) do |row_array, rows|
       imported_row = import_row(row_array)
-      rows[imported_row["code"]] = imported_row
+      rows[imported_row["code"]] = imported_row unless imported_row["code"].nil?
     end
   end
 
