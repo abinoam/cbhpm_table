@@ -37,7 +37,7 @@ class CBHPMTable
   end
 
   def headers
-    row(first_row_index)
+    map_columns(roo.row(first_row_index))
   end
 
   def first_row_index
@@ -49,13 +49,62 @@ class CBHPMTable
   end
 
   def import_row(row_array)
-    imported_row = {}
-
-    headers_hash.each do |col, name|
-      imported_row[name] = row_array[col]
+    imported_row = map_columns(row_array)
+    imported_row.each_key do |name|
+      imported_row[name] = normalize(name, imported_row[name])
     end
+    resolve_an_size(imported_row)
+  end
 
+  def map_columns(row_array)
+    headers_hash.each_with_object({}) do |(col, name), mapped_row|
+      mapped_row[name] = row_array[col]
+    end
+  end
+
+  # From CBHPM 2022 on, a valid "Novo Porte Anest" (new_an_size) overrides
+  # the old "Porte Anestés." (an_size). Zero is a valid porte.
+  def resolve_an_size(imported_row)
+    return imported_row unless imported_row.key?("new_an_size")
+    new_an_size = imported_row.delete("new_an_size")
+    imported_row["an_size"] = new_an_size unless new_an_size.nil?
     imported_row
+  end
+
+  def normalize(name, value)
+    return nil if value.nil? || (value.is_a?(String) && value.strip.empty?)
+
+    case name
+    when "code" then normalize_code(value)
+    when "name" then value.to_s.gsub(/\s+/, " ").strip
+    when "uco" then normalize_decimal(value)
+    when "aux_qty", "an_size", "new_an_size" then normalize_integer(value)
+    else value.is_a?(String) ? value.strip : value
+    end
+  end
+
+  def normalize_code(value)
+    return integer_value(value).to_s if value.is_a?(Numeric)
+    code = value.strip
+    code.match?(/\A\d\.\d{2}\.\d{2}\.\d{2}-\d\z/) ? code.delete(".-") : code
+  end
+
+  def normalize_decimal(value)
+    return value.to_f if value.is_a?(Numeric)
+    decimal = value.strip
+    decimal.match?(/\A\d+([.,]\d+)?\z/) ? decimal.tr(",", ".").to_f : decimal
+  end
+
+  def normalize_integer(value)
+    integer_value(value) || (value.is_a?(String) ? value.strip : value)
+  end
+
+  def integer_value(value)
+    case value
+    when Integer then value
+    when Float then value.to_i if value == value.to_i
+    when String then value.strip.to_i if value.strip.match?(/\A\d+\z/)
+    end
   end
 
   def rows
@@ -76,12 +125,17 @@ class CBHPMTable
 
   attr_reader :cbhpm_path
 
-  def each_row
+  # Duplicated codes are silently discarded: the last row read for a code
+  # overwrites the previous ones, keeping the position of the first.
+  def each_row(&block)
     return to_enum(:each_row) unless block_given?
-    roo_enum = roo.to_enum(:each)
-    _skip_header = roo_enum.next
-    loop do
-      yield import_row(roo_enum.next)
+    unique_rows.each_value(&block)
+  end
+
+  def unique_rows
+    @unique_rows ||= roo.to_enum(:each).drop(1).each_with_object({}) do |row_array, rows|
+      imported_row = import_row(row_array)
+      rows[imported_row["code"]] = imported_row
     end
   end
 
@@ -102,7 +156,9 @@ class CBHPMTable
   end
 
   private :first_row_index, :import_row, :fetch_version_format
-  private :fetch_headers_hash
+  private :fetch_headers_hash, :map_columns, :resolve_an_size, :normalize
+  private :normalize_code, :normalize_decimal, :normalize_integer
+  private :integer_value, :unique_rows
 
   VERSIONS = {}
 
@@ -237,5 +293,6 @@ class CBHPMTable
     "CBHPM 2020.xlsx" => CBHPM2020,
     "cbhpm_cut_for_testing.xlsx" => CBHPM2012 }
 
-  ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx }
+  ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx,
+                              ".xlsm" => Roo::Excelx }
 end
