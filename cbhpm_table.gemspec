@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # This gem will work with 1.9.3 or greater...
-  spec.required_ruby_version = '>= 1.9.3'
+  spec.required_ruby_version = '>= 4.0.0'
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
