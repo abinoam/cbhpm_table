@@ -36,8 +36,12 @@ class CBHPMTable
     fail "Can't find predefined headers for #{cbhpm_path}" unless @headers_hash
   end
 
+  # When several columns map to the same key, the first column names it.
   def headers
-    map_columns(roo.row(first_row_index))
+    header_row = roo.row(first_row_index)
+    headers_hash.each_with_object({}) do |(col, name), mapped_row|
+      mapped_row[name] ||= header_row[col]
+    end
   end
 
   def first_row_index
@@ -48,27 +52,14 @@ class CBHPMTable
     import_row(roo.row(row_index))
   end
 
+  # When several columns map to the same key, the rightmost non-blank value
+  # wins. From CBHPM 2022 on, this makes a valid "Novo Porte Anest" override
+  # the old "Porte Anestés." in an_size. Zero is a valid porte.
   def import_row(row_array)
-    imported_row = map_columns(row_array)
-    imported_row.each_key do |name|
-      imported_row[name] = normalize(name, imported_row[name])
+    headers_hash.each_with_object({}) do |(col, name), imported_row|
+      value = normalize(name, row_array[col])
+      imported_row[name] = value unless value.nil? && imported_row.key?(name)
     end
-    resolve_an_size(imported_row)
-  end
-
-  def map_columns(row_array)
-    headers_hash.each_with_object({}) do |(col, name), mapped_row|
-      mapped_row[name] = row_array[col]
-    end
-  end
-
-  # From CBHPM 2022 on, a valid "Novo Porte Anest" (new_an_size) overrides
-  # the old "Porte Anestés." (an_size). Zero is a valid porte.
-  def resolve_an_size(imported_row)
-    return imported_row unless imported_row.key?("new_an_size")
-    new_an_size = imported_row.delete("new_an_size")
-    imported_row["an_size"] = new_an_size unless new_an_size.nil?
-    imported_row
   end
 
   def normalize(name, value)
@@ -78,7 +69,7 @@ class CBHPMTable
     when "code" then normalize_code(value)
     when "name" then value.to_s.gsub(/\s+/, " ").strip
     when "uco" then normalize_decimal(value)
-    when "aux_qty", "an_size", "new_an_size" then normalize_integer(value)
+    when "aux_qty", "an_size" then normalize_integer(value)
     else value.is_a?(String) ? value.strip : value
     end
   end
@@ -158,7 +149,7 @@ class CBHPMTable
   end
 
   private :first_row_index, :import_row, :fetch_version_format
-  private :fetch_headers_hash, :map_columns, :resolve_an_size, :normalize
+  private :fetch_headers_hash, :normalize
   private :normalize_code, :normalize_decimal, :normalize_integer
   private :integer_value, :unique_rows
 
@@ -293,7 +284,7 @@ class CBHPMTable
         9 => "uco",
         10 => "aux_qty",
         11 => "an_size",
-        12 => "new_an_size"
+        12 => "an_size"
       },
       start_date: "01/01/2022",
       end_date: "31/12/2025" }
@@ -308,7 +299,7 @@ class CBHPMTable
         9 => "uco",
         10 => "aux_qty",
         11 => "an_size",
-        12 => "new_an_size"
+        12 => "an_size"
       },
       start_date: "01/01/2026",
       end_date: "" }

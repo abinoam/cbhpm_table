@@ -24,7 +24,7 @@ bundle exec rake build                           # build the gem into pkg/ (bund
 All logic lives in a single class, `CBHPMTable`, in `lib/cbhpm_table.rb`.
 
 - **Edition detection is by exact file basename.** `VERSION_FOR_FILE` maps the spreadsheet's basename (e.g. `"CBHPM 2012.xlsx"`, plus the mojibake names of the old 3a/4a/5a editions) to an edition hash. A file whose name isn't in that map has no edition metadata, and the constructor raises unless an explicit `headers_hash` is passed as the second argument to `CBHPMTable.new`.
-- **Each edition hash** (`CBHPM3a`, `CBHPM2012`, … also registered in `VERSIONS`) holds `file_basename`, `edition_name`, `start_date`/`end_date` (strings in `dd/mm/yyyy` format), and `header_format`: a map from column index to output key (`code`, `name`, `cir_size`, `uco`, `aux_qty`, `an_size`). Column layouts differ between editions: the pre-2012 `.xls` files start at column 0, the 2012+ `.xlsx`/`.xlsm` files start at column 4. From 2022 on, column 12 ("Novo Porte Anest") maps to `new_an_size`.
+- **Each edition hash** (`CBHPM3a`, `CBHPM2012`, … also registered in `VERSIONS`) holds `file_basename`, `edition_name`, `start_date`/`end_date` (strings in `dd/mm/yyyy` format), and `header_format`: a map from column index to output key (`code`, `name`, `cir_size`, `uco`, `aux_qty`, `an_size`). Column layouts differ between editions: the pre-2012 `.xls` files start at column 0, the 2012+ `.xlsx`/`.xlsm` files start at column 4. From 2022 on, column 12 ("Novo Porte Anest") also maps to `an_size`.
 - **Reader selection** goes by file extension through `ROO_CLASS_FOR_EXTENSION` (`.xls` → `Roo::Excel`, `.xlsx`/`.xlsm` → `Roo::Excelx`). The extension match is case-sensitive.
 - **Row access:** `headers` applies `header_format` to the raw first row. `row(i)` also normalizes the values (see below). `each_row` skips the first (header) row; with no block it returns an Enumerator. `rows` is `each_row.to_a`.
 - **Normalization (all editions).** The spreadsheets mix types in the same column, so `import_row` normalizes every value:
@@ -32,9 +32,9 @@ All logic lives in a single class, `CBHPMTable`, in `lib/cbhpm_table.rb`.
   - `code` becomes a String. Punctuation is stripped when 8 digits remain (`"4.02.01.02-3"` and `"3110428-2"`).
   - `name` has its whitespace squeezed and stripped.
   - `uco` becomes a Float, also when it comes as a String with a decimal comma (`"0,750"`).
-  - `aux_qty`/`an_size`/`new_an_size` become Integers (`"5"` → `5`).
+  - `aux_qty`/`an_size` become Integers (`"5"` → `5`).
   - Values that can't be parsed are kept as stripped Strings, never silently corrected.
-- **Anesthetic size.** A non-nil `new_an_size` overrides `an_size`, and the `new_an_size` key is then removed from the row.
+- **Columns mapped to the same key.** In `import_row` the rightmost non-blank value wins. From 2022 on, this makes a valid "Novo Porte Anest" override the old "Porte Anestés.", so the application only ever sees `an_size`. In `headers`, the first column's label is kept.
 - **Discarded rows.** `each_row` keeps rows in a Hash keyed by `code`. Rows without code are dropped, and a duplicated code overwrites the earlier row while keeping its position. The gem imports; it doesn't report spreadsheet errors.
 - **Original spreadsheets.** Keep them locally in `planilhas/` (git-ignored). The integration specs use them when present and are skipped otherwise.
 

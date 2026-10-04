@@ -108,7 +108,7 @@ describe CBHPMTable do
     def raw_row(values)
       Array.new(13).tap do |row|
         { "code" => 4, "name" => 5, "cir_size" => 8, "uco" => 9,
-          "aux_qty" => 10, "an_size" => 11, "new_an_size" => 12 }
+          "aux_qty" => 10, "an_size" => 11, "novo_porte_anest" => 12 }
           .each { |name, col| row[col] = values[name] }
       end
     end
@@ -156,20 +156,21 @@ describe CBHPMTable do
 
     describe "anesthetic size resolution" do
       it "prefers the new an_size" do
-        expect(import("an_size" => 3, "new_an_size" => 5)["an_size"]).to eq 5
+        expect(import("an_size" => 3, "novo_porte_anest" => 5)["an_size"]).to eq 5
       end
 
       it "accepts zero as a valid new an_size" do
-        expect(import("an_size" => 2, "new_an_size" => 0)["an_size"]).to eq 0
+        expect(import("an_size" => 2, "novo_porte_anest" => 0)["an_size"]).to eq 0
       end
 
       it "falls back to the old an_size when the new one is blank" do
-        expect(import("an_size" => "3", "new_an_size" => nil)["an_size"]).to eq 3
-        expect(import("an_size" => "3", "new_an_size" => "")["an_size"]).to eq 3
+        expect(import("an_size" => "3", "novo_porte_anest" => nil)["an_size"]).to eq 3
+        expect(import("an_size" => "3", "novo_porte_anest" => "")["an_size"]).to eq 3
       end
 
-      it "does not expose new_an_size" do
-        expect(import("new_an_size" => 4)).not_to have_key("new_an_size")
+      it "maps both columns to an_size" do
+        expect(import("an_size" => 3, "novo_porte_anest" => 4).keys).to eq(
+          %w[code name cir_size uco aux_qty an_size])
       end
     end
   end
@@ -215,6 +216,11 @@ describe CBHPMTable do
 
       it "returns no duplicated codes" do
         expect(table.rows.size).to eq rows_by_code.size
+      end
+
+      it "exposes the same keys as the previous editions" do
+        expect(table.headers.keys).to eq %w[code name cir_size uco aux_qty an_size]
+        expect(table.headers["an_size"]).to eq "Porte Anestés."
       end
 
       it "applies the new anesthetic size" do
