@@ -281,6 +281,36 @@ class CBHPMTable
         11 => "an_size"
       },
       start_date: "01/01/2020",
+      end_date: "31/12/2021" }
+
+  CBHPM2022 = VERSIONS[:cbhpm2022] =
+    { file_basename: "CBHPM_2022_atualizado.xlsm",
+      edition_name: "2022",
+      header_format: {
+        4 => "code",
+        5 => "name",
+        8 => "cir_size",
+        9 => "uco",
+        10 => "aux_qty",
+        11 => "an_size",
+        12 => "new_an_size"
+      },
+      start_date: "01/01/2022",
+      end_date: "31/12/2025" }
+
+  CBHPM2026 = VERSIONS[:cbhpm2026] =
+    { file_basename: "CBHPM_2026.xlsm",
+      edition_name: "2026",
+      header_format: {
+        4 => "code",
+        5 => "name",
+        8 => "cir_size",
+        9 => "uco",
+        10 => "aux_qty",
+        11 => "an_size",
+        12 => "new_an_size"
+      },
+      start_date: "01/01/2026",
       end_date: "" }
   
   VERSION_FOR_FILE = {
@@ -293,6 +323,8 @@ class CBHPMTable
     "CBHPM 2016.xlsx" => CBHPM2016,
     "CBHPM 2018.xlsx" => CBHPM2018,
     "CBHPM 2020.xlsx" => CBHPM2020,
+    "CBHPM_2022_atualizado.xlsm" => CBHPM2022,
+    "CBHPM_2026.xlsm" => CBHPM2026,
     "cbhpm_cut_for_testing.xlsx" => CBHPM2012 }
 
   ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx,

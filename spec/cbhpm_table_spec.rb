@@ -99,7 +99,7 @@ describe CBHPMTable do
 
   describe "normalization of mixed cell types" do
     let(:header_format) do
-      CBHPMTable::CBHPM2012[:header_format].merge(12 => "new_an_size")
+      CBHPMTable::CBHPM2026[:header_format]
     end
     let(:table) do
       CBHPMTable.new("spec/cbhpm/cbhpm_cut_for_testing.xlsx", header_format)
@@ -194,6 +194,33 @@ describe CBHPMTable do
     it "keeps only the last row read for each code, discarding rows without code" do
       expect(cbhpm_table.rows.map { |r| r.values_at("code", "name") }).to eq(
         [%w[10101012 Primeira], %w[10101020 Outra]])
+    end
+  end
+
+  %w[CBHPM_2022_atualizado.xlsm CBHPM_2026.xlsm].each do |basename|
+    describe "original spreadsheet #{basename}" do
+      path = File.join("planilhas", basename)
+      before { skip "#{path} not available" unless File.exist?(path) }
+
+      let(:table) { CBHPMTable.new(path) }
+      let(:rows_by_code) { table.rows.to_h { |row| [row["code"], row] } }
+
+      it "is detected by its basename" do
+        expect(table.edition_name).to eq basename[/\d{4}/]
+      end
+
+      it "returns every code as an 8 digit String" do
+        expect(rows_by_code.keys).to all(match(/\A\d{8}\z/))
+      end
+
+      it "returns no duplicated codes" do
+        expect(table.rows.size).to eq rows_by_code.size
+      end
+
+      it "applies the new anesthetic size" do
+        expect(rows_by_code["40202798"]["an_size"]).to eq 5
+        expect(rows_by_code["40201015"]["an_size"]).to eq 0
+      end
     end
   end
 end
