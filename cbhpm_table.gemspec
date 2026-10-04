@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  # This gem will work with 1.9.3 or greater...
+  # This gem requires Ruby 4.0.0 or greater.
   spec.required_ruby_version = '>= 4.0.0'
 
   spec.add_development_dependency "bundler"
