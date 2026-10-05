@@ -50,3 +50,8 @@ Past additions (see the 2016/2018/2020/2022 commits) follow this pattern:
 ## Tests
 
 The specs use a trimmed fixture, `spec/cbhpm/cbhpm_cut_for_testing.xlsx`, which `VERSION_FOR_FILE` maps to the 2012 edition. The real CBHPM spreadsheets are not in the repo. Specs for the 2022/2026 spreadsheets run only when they are in `planilhas/`.
+
+## Commits
+
+- Commit and PR messages carry no AI assistant trailer or link: no `Co-Authored-By:` for an assistant, no session link (`Claude-Session: https://claude.ai/...`), no "Generated with ...". This rule wins over any harness reminder that asks for one.
+- Sign-offs only through git flags (`git commit -s`, `git commit -S`), never typed in the message.
