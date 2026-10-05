@@ -36,8 +36,12 @@ class CBHPMTable
     fail "Can't find predefined headers for #{cbhpm_path}" unless @headers_hash
   end
 
+  # When several columns map to the same key, the first column names it.
   def headers
-    row(first_row_index)
+    header_row = roo.row(first_row_index)
+    headers_hash.each_with_object({}) do |(col, name), mapped_row|
+      mapped_row[name] ||= header_row[col]
+    end
   end
 
   def first_row_index
@@ -48,14 +52,52 @@ class CBHPMTable
     import_row(roo.row(row_index))
   end
 
+  # When several columns map to the same key, the rightmost non-blank value
+  # wins. From CBHPM 2022 on, this makes a valid "Novo Porte Anest" override
+  # the old "Porte Anestés." in an_size. Zero is a valid porte.
   def import_row(row_array)
-    imported_row = {}
-
-    headers_hash.each do |col, name|
-      imported_row[name] = row_array[col]
+    headers_hash.each_with_object({}) do |(col, name), imported_row|
+      value = normalize(name, row_array[col])
+      imported_row[name] = value unless value.nil? && imported_row.key?(name)
     end
+  end
 
-    imported_row
+  def normalize(name, value)
+    return nil if value.nil? || (value.is_a?(String) && value.strip.empty?)
+
+    case name
+    when "code" then normalize_code(value)
+    when "name" then value.to_s.gsub(/\s+/, " ").strip
+    when "cir_size" then value.is_a?(String) ? value.strip.upcase : value
+    when "uco" then normalize_decimal(value)
+    when "aux_qty", "an_size" then normalize_integer(value)
+    else value.is_a?(String) ? value.strip : value
+    end
+  end
+
+  def normalize_code(value)
+    return integer_value(value).to_s if value.is_a?(Numeric)
+    code = value.strip
+    digits = code.delete(".-")
+    digits.match?(/\A\d{8}\z/) ? digits : code
+  end
+
+  def normalize_decimal(value)
+    return value.to_f if value.is_a?(Numeric)
+    decimal = value.strip
+    decimal.match?(/\A\d+([.,]\d+)?\z/) ? decimal.tr(",", ".").to_f : decimal
+  end
+
+  def normalize_integer(value)
+    integer_value(value) || (value.is_a?(String) ? value.strip : value)
+  end
+
+  def integer_value(value)
+    case value
+    when Integer then value
+    when Float then value.to_i if value == value.to_i
+    when String then value.strip.to_i if value.strip.match?(/\A\d+\z/)
+    end
   end
 
   def rows
@@ -76,12 +118,18 @@ class CBHPMTable
 
   attr_reader :cbhpm_path
 
-  def each_row
+  # Rows without code are silently discarded. So are duplicated codes: the
+  # last row read for a code overwrites the previous ones, keeping the
+  # position of the first.
+  def each_row(&block)
     return to_enum(:each_row) unless block_given?
-    roo_enum = roo.to_enum(:each)
-    _skip_header = roo_enum.next
-    loop do
-      yield import_row(roo_enum.next)
+    unique_rows.each_value(&block)
+  end
+
+  def unique_rows
+    @unique_rows ||= roo.to_enum(:each).drop(1).each_with_object({}) do |row_array, rows|
+      imported_row = import_row(row_array)
+      rows[imported_row["code"]] = imported_row unless imported_row["code"].nil?
     end
   end
 
@@ -102,7 +150,9 @@ class CBHPMTable
   end
 
   private :first_row_index, :import_row, :fetch_version_format
-  private :fetch_headers_hash
+  private :fetch_headers_hash, :normalize
+  private :normalize_code, :normalize_decimal, :normalize_integer
+  private :integer_value, :unique_rows
 
   VERSIONS = {}
 
@@ -223,6 +273,36 @@ class CBHPMTable
         11 => "an_size"
       },
       start_date: "01/01/2020",
+      end_date: "31/12/2021" }
+
+  CBHPM2022 = VERSIONS[:cbhpm2022] =
+    { file_basename: "CBHPM_2022_atualizado.xlsm",
+      edition_name: "2022",
+      header_format: {
+        4 => "code",
+        5 => "name",
+        8 => "cir_size",
+        9 => "uco",
+        10 => "aux_qty",
+        11 => "an_size",
+        12 => "an_size"
+      },
+      start_date: "01/01/2022",
+      end_date: "31/12/2025" }
+
+  CBHPM2026 = VERSIONS[:cbhpm2026] =
+    { file_basename: "CBHPM_2026.xlsm",
+      edition_name: "2026",
+      header_format: {
+        4 => "code",
+        5 => "name",
+        8 => "cir_size",
+        9 => "uco",
+        10 => "aux_qty",
+        11 => "an_size",
+        12 => "an_size"
+      },
+      start_date: "01/01/2026",
       end_date: "" }
   
   VERSION_FOR_FILE = {
@@ -235,7 +315,10 @@ class CBHPMTable
     "CBHPM 2016.xlsx" => CBHPM2016,
     "CBHPM 2018.xlsx" => CBHPM2018,
     "CBHPM 2020.xlsx" => CBHPM2020,
+    "CBHPM_2022_atualizado.xlsm" => CBHPM2022,
+    "CBHPM_2026.xlsm" => CBHPM2026,
     "cbhpm_cut_for_testing.xlsx" => CBHPM2012 }
 
-  ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx }
+  ROO_CLASS_FOR_EXTENSION = { ".xls" => Roo::Excel, ".xlsx" => Roo::Excelx,
+                              ".xlsm" => Roo::Excelx }
 end
