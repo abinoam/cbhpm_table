@@ -31,6 +31,7 @@ All logic lives in a single class, `CBHPMTable`, in `lib/cbhpm_table.rb`.
   - `nil` and blank strings become `nil`. Zero stays `0`, because porte 0 is valid.
   - `code` becomes a String. Punctuation is stripped when 8 digits remain (`"4.02.01.02-3"` and `"3110428-2"`).
   - `name` has its whitespace squeezed and stripped.
+  - `cir_size` is upcased (the 2020+ spreadsheets have a `9c` for code 31303366).
   - `uco` becomes a Float, also when it comes as a String with a decimal comma (`"0,750"`).
   - `aux_qty`/`an_size` become Integers (`"5"` → `5`).
   - Values that can't be parsed are kept as stripped Strings, never silently corrected.

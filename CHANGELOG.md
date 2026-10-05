@@ -12,6 +12,7 @@
 - Row values are normalized for every edition. This changes the returned types:
   - `code` is a String. Punctuation is stripped when 8 digits remain (`"3110428-2"` → `"31104282"`).
   - `name` has its whitespace squeezed.
+  - `cir_size` is upcased (`"9c"` in the 2020+ spreadsheets → `"9C"`).
   - `uco` is a Float, also when the spreadsheet has a decimal comma (`"0,750"`).
   - `aux_qty` and `an_size` are Integers.
   - Blank cells are `nil`.

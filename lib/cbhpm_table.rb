@@ -68,6 +68,7 @@ class CBHPMTable
     case name
     when "code" then normalize_code(value)
     when "name" then value.to_s.gsub(/\s+/, " ").strip
+    when "cir_size" then value.is_a?(String) ? value.strip.upcase : value
     when "uco" then normalize_decimal(value)
     when "aux_qty", "an_size" then normalize_integer(value)
     else value.is_a?(String) ? value.strip : value

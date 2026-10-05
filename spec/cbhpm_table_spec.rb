@@ -133,6 +133,10 @@ describe CBHPMTable do
       expect(import("name" => name)["name"]).to eq "Ablação de alvos intracerebrais"
     end
 
+    it "upcases cir_size" do
+      expect(import("cir_size" => " 9c ")["cir_size"]).to eq "9C"
+    end
+
     it "converts uco to Float, accepting decimal comma" do
       expect(import("uco" => "0,750")["uco"]).to eq 0.75
       expect(import("uco" => 7.39)["uco"]).to eq 7.39
@@ -221,6 +225,10 @@ describe CBHPMTable do
       it "exposes the same keys as the previous editions" do
         expect(table.headers.keys).to eq %w[code name cir_size uco aux_qty an_size]
         expect(table.headers["an_size"]).to eq "Porte Anestés."
+      end
+
+      it "upcases the lowercase cir_size of the spreadsheet" do
+        expect(rows_by_code["31303366"]["cir_size"]).to eq "9C"
       end
 
       it "applies the new anesthetic size" do

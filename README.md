@@ -50,6 +50,7 @@ Supported editions: 3a, 4a, 5a, 2010, 2012, 2014, 2016, 2018, 2020, 2022 and 202
 
 Row values are normalized for every edition:
 * `code` and `name` come as Strings.
+* `cir_size` comes upcased (the 2020+ spreadsheets have a `9c`).
 * `uco` comes as a Float.
 * `aux_qty` and `an_size` come as Integers.
 * Blank cells come as `nil`.
